@@ -3,20 +3,31 @@ package cn.niu.message;
 import lombok.Data;
 import lombok.ToString;
 
-@Data
+/**
+ * @author Ben
+ */
 @ToString(callSuper = true)
 public class LoginRequestMessage extends Message {
-    private String username;//用户名
-    private String password;//密码
-//    private String nickname;//昵称
+    /**
+     * 用户名
+     */
+    private String username;
+    /**
+     * 密码
+     */
+    private String password;
+    /**
+     * 昵称
+     */
+    private String nickname;
 
     public LoginRequestMessage() {
     }
 
-    public LoginRequestMessage(String username, String password/*, String nickname*/) {
+    public LoginRequestMessage(String username, String password, String nickname) {
         this.username = username;
         this.password = password;
-//        this.nickname = nickname;
+        this.nickname = nickname;
     }
 
     @Override

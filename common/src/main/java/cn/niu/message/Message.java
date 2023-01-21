@@ -1,4 +1,4 @@
-package cn.niu;
+package cn.niu.message;
 
 
 import lombok.Data;
@@ -32,6 +32,10 @@ public abstract class Message implements Serializable {
      */
     private int messageType;
 
+    /**
+     * 抽象方法，由真正的子类实现，返回具体的消息类型
+     * @return
+     */
     public abstract int getMessageType();
 
     /**
