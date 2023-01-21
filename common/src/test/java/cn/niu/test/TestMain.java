@@ -1,7 +1,7 @@
 package cn.niu.test;
 
-import cn.niu.message.LoginRequestMessage;
-import cn.niu.protocol.MessageCodec;
+import cn.niu.common.message.LoginRequestMessage;
+import cn.niu.common.protocol.MessageCodec;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.embedded.EmbeddedChannel;

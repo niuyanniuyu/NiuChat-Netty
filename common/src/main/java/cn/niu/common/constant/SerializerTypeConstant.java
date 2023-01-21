@@ -1,4 +1,4 @@
-package cn.niu.constant;
+package cn.niu.common.constant;
 
 /**
  * 存放序列化方式的常量

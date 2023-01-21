@@ -1,7 +1,7 @@
-package cn.niu.protocol;
+package cn.niu.common.protocol;
 
-import cn.niu.constant.SerializerTypeConstant;
-import cn.niu.message.Message;
+import cn.niu.common.constant.SerializerTypeConstant;
+import cn.niu.common.message.Message;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;

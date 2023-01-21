@@ -1,9 +1,10 @@
-package cn.niu.message;
+package cn.niu.common.message;
 
-import lombok.Data;
 import lombok.ToString;
 
 /**
+ * 登录请求消息
+ *
  * @author Ben
  */
 @ToString(callSuper = true)
@@ -20,9 +21,6 @@ public class LoginRequestMessage extends Message {
      * 昵称
      */
     private String nickname;
-
-    public LoginRequestMessage() {
-    }
 
     public LoginRequestMessage(String username, String password, String nickname) {
         this.username = username;

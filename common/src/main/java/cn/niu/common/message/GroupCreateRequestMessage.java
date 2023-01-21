@@ -1,4 +1,4 @@
-package cn.niu.message;
+package cn.niu.common.message;
 
 import lombok.Data;
 import lombok.ToString;
