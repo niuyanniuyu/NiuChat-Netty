@@ -1,5 +1,6 @@
 package cn.niu.common.message;
 
+import lombok.AllArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -8,6 +9,7 @@ import lombok.ToString;
  * @author Ben
  */
 @ToString(callSuper = true)
+@AllArgsConstructor
 public class LoginRequestMessage extends Message {
     /**
      * 用户名
@@ -22,10 +24,10 @@ public class LoginRequestMessage extends Message {
      */
     private String nickname;
 
-    public LoginRequestMessage(String username, String password, String nickname) {
+
+    public LoginRequestMessage(String username, String password) {
         this.username = username;
         this.password = password;
-        this.nickname = nickname;
     }
 
     @Override
