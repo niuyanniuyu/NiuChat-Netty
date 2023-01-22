@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (!map.containsKey(username)) {
-            return R.error("账号不存在");
+            return R.error("账号不存在！");
         }
 
         // 密码md5加密与map存储的对比
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
             return R.error("密码错误！");
         }
 
-        return R.success(user);
+        return R.success(user,"登陆成功！");
     }
 
     /**

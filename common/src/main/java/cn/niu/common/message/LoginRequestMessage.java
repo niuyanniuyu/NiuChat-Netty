@@ -1,6 +1,8 @@
 package cn.niu.common.message;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -9,6 +11,8 @@ import lombok.ToString;
  * @author Ben
  */
 @ToString(callSuper = true)
+@Getter
+@Setter
 @AllArgsConstructor
 public class LoginRequestMessage extends Message {
     /**

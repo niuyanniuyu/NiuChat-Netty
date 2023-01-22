@@ -23,6 +23,7 @@ import java.util.Scanner;
 @Slf4j
 public class ChatClient {
     public static void main(String[] args) {
+        log.info("client start..");
         //定义线程组
         NioEventLoopGroup group = new NioEventLoopGroup();
 
@@ -37,7 +38,7 @@ public class ChatClient {
                 @Override
                 protected void initChannel(SocketChannel ch) throws Exception {
                     ch.pipeline().addLast(new ProtocolFrameDecoder());
-                    ch.pipeline().addLast(LOGGING_HANDLER);
+                    // ch.pipeline().addLast(LOGGING_HANDLER);
                     ch.pipeline().addLast(MESSAGE_CODEC);
                     ch.pipeline().addLast("client handler", new ChannelInboundHandlerAdapter() {
                         @Override
@@ -46,9 +47,9 @@ public class ChatClient {
                             new Thread(() -> {
                                 //负责接收用户在控制台的输入并发送各种消息
                                 Scanner scanner = new Scanner(System.in);
-                                System.out.println("请输入用户名：");
+                                System.out.print("请输入用户名：");
                                 String username = scanner.nextLine();
-                                System.out.println("请输入密码：");
+                                System.out.print("请输入密码：");
                                 String password = scanner.nextLine();
                                 if (StrUtil.isAllNotEmpty(username, password)) {
                                     //构造LoginMessage消息对象
@@ -59,10 +60,17 @@ public class ChatClient {
                             }, "system.in").start();
                             super.channelActive(ctx);
                         }
+
+                        @Override
+                        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+                            log.info("msg: {}", msg);
+                            super.channelRead(ctx, msg);
+                        }
                     });
                 }
             });
             Channel channel = bootstrap.connect("localhost", 8080).sync().channel();
+            log.info("client started");
             channel.closeFuture().sync();
         } catch (Exception e) {
             log.error("客户端异常，{}", e.toString());
