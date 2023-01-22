@@ -3,8 +3,10 @@ package cn.niu.common.protocol;
 import cn.niu.common.constant.SerializerTypeConstant;
 import cn.niu.common.message.Message;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
+import io.netty.handler.codec.MessageToMessageCodec;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -16,18 +18,22 @@ import java.util.List;
  * @author Ben
  */
 @Slf4j
-@Deprecated
-public class MessageCodec extends ByteToMessageCodec<Message> {
+/**
+ * 必须和 LengthFieldBasedFrameDecoder 一起使用，确保接到的 ByteBuf 消息是完整的
+ */
+@ChannelHandler.Sharable
+public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message> {
     /**
      * 对消息按固定格式(魔数、版本号、序列化方式、消息指令类型、请求序号、长度、padding、内容)编码
      *
      * @param ctx
      * @param msg
-     * @param out
+     * @param outList
      * @throws Exception
      */
     @Override
-    public void encode(ChannelHandlerContext ctx, Message msg, ByteBuf out) {
+    protected void encode(ChannelHandlerContext ctx, Message msg, List<Object> outList) throws Exception {
+        ByteBuf out = ctx.alloc().buffer();
         // 4个字节的魔数
         out.writeBytes(new byte[]{'b', 'a', 'b', 'y'});
         // 1个字节的版本号
@@ -54,6 +60,9 @@ public class MessageCodec extends ByteToMessageCodec<Message> {
 
             // 内容
             out.writeBytes(bytes);
+
+            //写入结果
+            outList.add(out);
 
         } catch (Exception e) {
             log.error("编码消息失败", e);
