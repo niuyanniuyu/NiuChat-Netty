@@ -1,6 +1,7 @@
 package cn.niu.server;
 
 import cn.niu.common.protocol.MessageCodecSharable;
+import cn.niu.common.protocol.ProtocolFrameDecoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -35,9 +36,8 @@ public class ChatServer {
             serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel ch) throws Exception {
-                    ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(
-                            1024, 11, 4, 1, 0
-                    ));
+                    //每个channel独享，不能设置为共有对象
+                    ch.pipeline().addLast(new ProtocolFrameDecoder());
                     ch.pipeline().addLast(LOGGING_HANDLER);
                     ch.pipeline().addLast(MESSAGE_CODEC);
                 }
