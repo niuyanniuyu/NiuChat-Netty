@@ -3,6 +3,7 @@ package cn.niu.server.session.impl;
 import cn.niu.server.session.SessionService;
 import io.netty.channel.Channel;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -11,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Ben
  */
+//TODO 应该使用并发安全Map集合
 public class SessionServiceImpl implements SessionService {
     /**
      * 根据用户名查询channel
@@ -39,13 +41,23 @@ public class SessionServiceImpl implements SessionService {
     }
 
     /**
-     * 解绑channel和会话
+     * 解绑channel和用户会话
      *
      * @param channel 哪个 channel 要解绑会话
      */
     @Override
     public void unbind(Channel channel) {
+        channelUsernameMap.remove(channel);
+    }
 
+    /**
+     * 解绑用户会话和channel
+     *
+     * @param username 哪个 username 要解绑会话
+     */
+    @Override
+    public void unbind(String username) {
+        usernameChannelMap.remove(username);
     }
 
     /**
@@ -57,7 +69,7 @@ public class SessionServiceImpl implements SessionService {
      */
     @Override
     public Object getAttribute(Channel channel, String name) {
-        return null;
+        return channelAttributesMap.get(channel).get(name);
     }
 
     /**
@@ -69,7 +81,9 @@ public class SessionServiceImpl implements SessionService {
      */
     @Override
     public void setAttribute(Channel channel, String name, Object value) {
-
+        Map<String, Object> attribute = new HashMap<>(2);
+        attribute.put(name, value);
+        channelAttributesMap.put(channel, attribute);
     }
 
     /**
@@ -80,7 +94,7 @@ public class SessionServiceImpl implements SessionService {
      */
     @Override
     public Channel getChannel(String username) {
-        return null;
+        return usernameChannelMap.get(username);
     }
 
     /**
@@ -91,6 +105,6 @@ public class SessionServiceImpl implements SessionService {
      */
     @Override
     public String getUsername(Channel channel) {
-        return null;
+        return channelUsernameMap.get(channel);
     }
 }

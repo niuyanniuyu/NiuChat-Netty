@@ -24,6 +24,13 @@ public interface SessionService {
     void unbind(Channel channel);
 
     /**
+     * 解绑会话
+     *
+     * @param username 哪个 username 要解绑会话
+     */
+    void unbind(String username);
+
+    /**
      * 获取属性
      *
      * @param channel 哪个 channel

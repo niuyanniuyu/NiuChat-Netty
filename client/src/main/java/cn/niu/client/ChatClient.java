@@ -69,6 +69,7 @@ public class ChatClient {
                                         return;
                                     }
 
+                                    table:
                                     while (true) {
                                         System.out.println("=================");
                                         System.out.println("send [username][content]");
@@ -109,7 +110,7 @@ public class ChatClient {
                                                 break;
                                             case "quit":
                                                 ctx.channel().close();
-                                                break;
+                                                break table;
                                             default:
                                                 System.out.println("输入错误，请重新输入！");
                                         }
@@ -125,13 +126,13 @@ public class ChatClient {
                             if (msg instanceof LoginResponseMessage) {
                                 LoginResponseMessage responseMessage = (LoginResponseMessage) msg;
                                 log.info(responseMessage.getReason());
+                                // 设置登录成功标志位
                                 if (responseMessage.isSuccess()) {
                                     LoginUtils.LOGIN_STATE.set(true);
                                 }
                                 // 使System.in线程继续执行下一次输入
                                 LoginUtils.WAIT_FOR_LOGIN.countDown();
                             }
-
                             super.channelRead(ctx, msg);
                         }
                     });
