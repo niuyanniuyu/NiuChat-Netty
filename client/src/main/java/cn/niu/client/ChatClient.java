@@ -79,7 +79,37 @@ public class ChatClient {
                                         System.out.println("gquit [group name]");
                                         System.out.println("quit");
                                         System.out.println("=================");
-                                        String in = scanner.nextLine();
+
+                                        String command = scanner.nextLine();
+                                        String[] commandArgs = command.split(" ");
+
+                                        //根据命令向服务端发送不同消息
+                                        switch (commandArgs[0]) {
+                                            case "send":
+                                                ctx.writeAndFlush(new ChatRequestMessage(username, commandArgs[1], commandArgs[2]));
+                                                break;
+                                            case "gsend":
+                                                ctx.writeAndFlush(new GroupChatRequestMessage(username, commandArgs[1], commandArgs[2]));
+                                                break;
+                                            case "gcreate":
+                                                Set<String> members = new HashSet<>(Arrays.asList(commandArgs[2].split(",")));
+                                                ctx.writeAndFlush(new GroupCreateRequestMessage(commandArgs[1], members));
+                                                break;
+                                            case "gmembers":
+                                                ctx.writeAndFlush(new GroupMembersRequestMessage(commandArgs[1]));
+                                                break;
+                                            case "gjoin":
+                                                ctx.writeAndFlush(new GroupJoinRequestMessage(username, commandArgs[1]));
+                                                break;
+                                            case "gquit":
+                                                ctx.writeAndFlush(new GroupQuitRequestMessage(username, commandArgs[1]));
+                                                break;
+                                            case "quit":
+                                                ctx.channel().close();
+                                                break;
+                                            default:
+                                                System.out.println("输入错误，请重新输入！");
+                                        }
                                     }
                                 }
                             }, "system.in").start();
