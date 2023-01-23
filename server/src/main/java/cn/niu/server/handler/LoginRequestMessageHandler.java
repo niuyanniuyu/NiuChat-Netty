@@ -11,7 +11,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 /**
- * 登录消息处理的Handler
+ * 处理登录消息的Handler
  * @author Ben
  */
 @ChannelHandler.Sharable

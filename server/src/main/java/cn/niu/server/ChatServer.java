@@ -2,6 +2,7 @@ package cn.niu.server;
 
 import cn.niu.common.protocol.MessageCodecSharable;
 import cn.niu.common.protocol.ProtocolFrameDecoder;
+import cn.niu.server.handler.ChatRequestMessageHandler;
 import cn.niu.server.handler.LoginRequestMessageHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -29,6 +30,8 @@ public class ChatServer {
         //定义可共享的Handler
         LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
         MessageCodecSharable MESSAGE_CODEC = new MessageCodecSharable();
+        LoginRequestMessageHandler LOGIN_REQUEST_MESSAGE_HANDLER = new LoginRequestMessageHandler();
+        ChatRequestMessageHandler CHAT_REQUEST_MESSAGE_HANDLER = new ChatRequestMessageHandler();
 
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
@@ -41,7 +44,8 @@ public class ChatServer {
                     ch.pipeline().addLast(new ProtocolFrameDecoder());
                     //ch.pipeline().addLast(LOGGING_HANDLER);
                     ch.pipeline().addLast(MESSAGE_CODEC);
-                    ch.pipeline().addLast(new LoginRequestMessageHandler());
+                    ch.pipeline().addLast(LOGIN_REQUEST_MESSAGE_HANDLER);
+                    ch.pipeline().addLast(CHAT_REQUEST_MESSAGE_HANDLER);
                 }
             });
 
