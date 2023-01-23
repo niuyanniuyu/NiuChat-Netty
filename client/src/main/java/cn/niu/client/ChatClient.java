@@ -2,8 +2,7 @@ package cn.niu.client;
 
 import cn.hutool.core.util.StrUtil;
 import cn.niu.client.utils.LoginUtils;
-import cn.niu.common.message.LoginRequestMessage;
-import cn.niu.common.message.LoginResponseMessage;
+import cn.niu.common.message.*;
 import cn.niu.common.protocol.MessageCodecSharable;
 import cn.niu.common.protocol.ProtocolFrameDecoder;
 import io.netty.bootstrap.Bootstrap;
@@ -15,7 +14,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * 客户端主函数
@@ -81,7 +80,6 @@ public class ChatClient {
                                         System.out.println("quit");
                                         System.out.println("=================");
                                         String in = scanner.nextLine();
-
                                     }
                                 }
                             }, "system.in").start();
