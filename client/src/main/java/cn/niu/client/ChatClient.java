@@ -86,12 +86,15 @@ public class ChatClient {
                                         //根据命令向服务端发送不同消息
                                         switch (commandArgs[0]) {
                                             case "send":
+                                                //send [username][content]
                                                 ctx.writeAndFlush(new ChatRequestMessage(username, commandArgs[1], commandArgs[2]));
                                                 break;
                                             case "gsend":
+                                                //gsend [group name][content]
                                                 ctx.writeAndFlush(new GroupChatRequestMessage(username, commandArgs[1], commandArgs[2]));
                                                 break;
                                             case "gcreate":
+                                                //创建聊天组成员集合
                                                 Set<String> members = new HashSet<>(Arrays.asList(commandArgs[2].split(",")));
                                                 ctx.writeAndFlush(new GroupCreateRequestMessage(commandArgs[1], members));
                                                 break;
@@ -128,6 +131,7 @@ public class ChatClient {
                                 // 使System.in线程继续执行下一次输入
                                 LoginUtils.WAIT_FOR_LOGIN.countDown();
                             }
+
                             super.channelRead(ctx, msg);
                         }
                     });
