@@ -1,21 +1,15 @@
 package cn.niu.server;
 
-import cn.niu.common.message.LoginRequestMessage;
-import cn.niu.common.message.LoginResponseMessage;
 import cn.niu.common.protocol.MessageCodecSharable;
 import cn.niu.common.protocol.ProtocolFrameDecoder;
-import cn.niu.server.common.R;
-import cn.niu.server.entity.User;
-import cn.niu.server.service.factories.UserServiceFactory;
+import cn.niu.server.handler.ChatRequestMessageHandler;
+import cn.niu.server.handler.LoginRequestMessageHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +30,8 @@ public class ChatServer {
         //定义可共享的Handler
         LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
         MessageCodecSharable MESSAGE_CODEC = new MessageCodecSharable();
+        LoginRequestMessageHandler LOGIN_REQUEST_MESSAGE_HANDLER = new LoginRequestMessageHandler();
+        ChatRequestMessageHandler CHAT_REQUEST_MESSAGE_HANDLER = new ChatRequestMessageHandler();
 
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
@@ -48,17 +44,8 @@ public class ChatServer {
                     ch.pipeline().addLast(new ProtocolFrameDecoder());
                     //ch.pipeline().addLast(LOGGING_HANDLER);
                     ch.pipeline().addLast(MESSAGE_CODEC);
-                    ch.pipeline().addLast(new SimpleChannelInboundHandler<LoginRequestMessage>() {
-                        @Override
-                        protected void channelRead0(ChannelHandlerContext ctx, LoginRequestMessage msg) throws Exception {
-                            String username = msg.getUsername();
-                            String password = msg.getPassword();
-                            R<User> result = UserServiceFactory.getUserService().login(username, password);
-                            LoginResponseMessage loginResponseMessage = new LoginResponseMessage(result.getCode() == 1, result.getMsg());
-                            ctx.writeAndFlush(loginResponseMessage);
-
-                        }
-                    });
+                    ch.pipeline().addLast(LOGIN_REQUEST_MESSAGE_HANDLER);
+                    ch.pipeline().addLast(CHAT_REQUEST_MESSAGE_HANDLER);
                 }
             });
 
@@ -72,4 +59,5 @@ public class ChatServer {
             worker.shutdownGracefully();
         }
     }
+
 }
