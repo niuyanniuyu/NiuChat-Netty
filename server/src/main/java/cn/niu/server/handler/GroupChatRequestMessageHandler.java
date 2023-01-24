@@ -8,6 +8,7 @@ import cn.niu.server.constants.ChatConstant;
 import cn.niu.server.constants.GroupConstant;
 import cn.niu.server.session.factories.ChatGroupSessionServiceFactory;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -18,6 +19,7 @@ import java.util.List;
  *
  * @author Ben
  */
+@ChannelHandler.Sharable
 public class GroupChatRequestMessageHandler extends SimpleChannelInboundHandler<GroupChatRequestMessage> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, GroupChatRequestMessage msg) throws Exception {
