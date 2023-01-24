@@ -3,6 +3,7 @@ package cn.niu.server;
 import cn.niu.common.protocol.MessageCodecSharable;
 import cn.niu.common.protocol.ProtocolFrameDecoder;
 import cn.niu.server.handler.ChatRequestMessageHandler;
+import cn.niu.server.handler.GroupChatRequestMessageHandler;
 import cn.niu.server.handler.GroupCreatRequestMessageHandler;
 import cn.niu.server.handler.LoginRequestMessageHandler;
 import io.netty.bootstrap.ServerBootstrap;
@@ -33,8 +34,10 @@ public class ChatServer {
         MessageCodecSharable MESSAGE_CODEC = new MessageCodecSharable();
         LoginRequestMessageHandler LOGIN_REQUEST_MESSAGE_HANDLER = new LoginRequestMessageHandler();
         ChatRequestMessageHandler CHAT_REQUEST_MESSAGE_HANDLER = new ChatRequestMessageHandler();
-        GroupCreatRequestMessageHandler GROUP_CREATE_MESSAGE_HANDLER = new GroupCreatRequestMessageHandler();
+        GroupCreatRequestMessageHandler GROUP_CREATE_REQUEST_MESSAGE_HANDLER = new GroupCreatRequestMessageHandler();
+        GroupChatRequestMessageHandler GROUP_CHAT_REQUEST_MESSAGE_HANDLER = new GroupChatRequestMessageHandler();
         //TODO 其他类型Handler
+
 
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
@@ -49,7 +52,8 @@ public class ChatServer {
                     ch.pipeline().addLast(MESSAGE_CODEC);
                     ch.pipeline().addLast(LOGIN_REQUEST_MESSAGE_HANDLER);
                     ch.pipeline().addLast(CHAT_REQUEST_MESSAGE_HANDLER);
-                    ch.pipeline().addLast(GROUP_CREATE_MESSAGE_HANDLER);
+                    ch.pipeline().addLast(GROUP_CREATE_REQUEST_MESSAGE_HANDLER);
+                    ch.pipeline().addLast(GROUP_CHAT_REQUEST_MESSAGE_HANDLER);
                 }
             });
 
