@@ -8,6 +8,7 @@ import cn.niu.server.service.UserService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 用户管理实现类
@@ -19,12 +20,12 @@ public class UserServiceImpl implements UserService {
     /**
      * 静态方式保存用户信息
      */
-    Map<String, User> map = new HashMap<>(3);
+    Map<String, User> userMap = new ConcurrentHashMap<>(3);
 
     {
-        map.put("张三", new User("张三", SecureUtil.md5("zhangsan"), "三三"));
-        map.put("李四", new User("李四", SecureUtil.md5("lisi"), "四四"));
-        map.put("王五", new User("王五", SecureUtil.md5("wangwu"), "五五"));
+        userMap.put("张三", new User("张三", SecureUtil.md5("zhangsan"), "三三"));
+        userMap.put("李四", new User("李四", SecureUtil.md5("lisi"), "四四"));
+        userMap.put("王五", new User("王五", SecureUtil.md5("wangwu"), "五五"));
     }
 
 
@@ -41,12 +42,12 @@ public class UserServiceImpl implements UserService {
             return R.error("账号或密码为空！");
         }
 
-        if (!map.containsKey(username)) {
+        if (!userMap.containsKey(username)) {
             return R.error("账号不存在！");
         }
 
         // 密码md5加密与map存储的对比
-        User user = map.get(username);
+        User user = userMap.get(username);
         if (!SecureUtil.md5(password).equals(user.getPassword())) {
             return R.error("密码错误！");
         }
@@ -65,4 +66,16 @@ public class UserServiceImpl implements UserService {
     public R<User> register(String username, String password) {
         return null;
     }
+
+    /**
+     * 判断用户是否存在
+     * @param username 用户名
+     * @return
+     */
+    @Override
+    public boolean isExistUser(String username) {
+        return userMap.containsKey(username);
+    }
+
+
 }

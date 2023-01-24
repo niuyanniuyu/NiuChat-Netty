@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Ben
  */
-//TODO 应该使用并发安全Map集合
 public class SessionServiceImpl implements SessionService {
     /**
      * 根据用户名查询channel

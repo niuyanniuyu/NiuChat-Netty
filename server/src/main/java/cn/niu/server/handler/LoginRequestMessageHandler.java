@@ -5,7 +5,7 @@ import cn.niu.common.message.LoginResponseMessage;
 import cn.niu.server.common.R;
 import cn.niu.server.entity.User;
 import cn.niu.server.service.factories.UserServiceFactory;
-import cn.niu.server.session.impl.SessionServiceFactory;
+import cn.niu.server.session.factories.SessionServiceFactory;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
