@@ -46,7 +46,10 @@ public class SessionServiceImpl implements SessionService {
      */
     @Override
     public void unbind(Channel channel) {
+        channel.close();
+        String username = channelUsernameMap.get(channel);
         channelUsernameMap.remove(channel);
+        usernameChannelMap.remove(username);
     }
 
     /**
@@ -56,6 +59,9 @@ public class SessionServiceImpl implements SessionService {
      */
     @Override
     public void unbind(String username) {
+        Channel channel = usernameChannelMap.get(username);
+        channel.close();
+        channelUsernameMap.remove(channel);
         usernameChannelMap.remove(username);
     }
 
