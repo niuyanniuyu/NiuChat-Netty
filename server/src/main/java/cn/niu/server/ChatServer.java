@@ -4,15 +4,13 @@ import cn.niu.common.config.CommonConfig;
 import cn.niu.common.protocol.MessageCodecSharable;
 import cn.niu.common.protocol.ProtocolFrameDecoder;
 import cn.niu.server.constants.HeartBeatConstant;
+import cn.niu.server.constants.ServerSocketChannelConstant;
 import cn.niu.server.handler.ChatRequestMessageHandler;
 import cn.niu.server.handler.IdleHandler;
 import cn.niu.server.handler.LoginRequestMessageHandler;
 import cn.niu.server.session.impl.SessionServiceFactory;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -48,6 +46,8 @@ public class ChatServer {
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.channel(NioServerSocketChannel.class);
+            //设置最大等待连接数量
+            serverBootstrap.option(ChannelOption.SO_BACKLOG, ServerSocketChannelConstant.SO_BACKLOG_MAX_VALUE);
             serverBootstrap.group(boss, worker);
             serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
@@ -65,6 +65,7 @@ public class ChatServer {
                 }
             });
 
+            //绑定端口号
             Channel channel = serverBootstrap.bind(CommonConfig.getServerPort()).sync().channel();
             log.info("server started");
             channel.closeFuture().sync();
