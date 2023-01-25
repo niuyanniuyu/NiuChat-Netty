@@ -4,6 +4,7 @@ import cn.niu.common.protocol.MessageCodecSharable;
 import cn.niu.common.protocol.ProtocolFrameDecoder;
 import cn.niu.server.constants.HeartBeatConstant;
 import cn.niu.server.handler.ChatRequestMessageHandler;
+import cn.niu.server.handler.IdleHandler;
 import cn.niu.server.handler.LoginRequestMessageHandler;
 import cn.niu.server.session.impl.SessionServiceFactory;
 import io.netty.bootstrap.ServerBootstrap;
@@ -39,6 +40,7 @@ public class ChatServer {
         //定义可共享的Handler
         LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
         MessageCodecSharable MESSAGE_CODEC = new MessageCodecSharable();
+        IdleHandler IDLE_HANDLER = new IdleHandler();
         LoginRequestMessageHandler LOGIN_REQUEST_MESSAGE_HANDLER = new LoginRequestMessageHandler();
         ChatRequestMessageHandler CHAT_REQUEST_MESSAGE_HANDLER = new ChatRequestMessageHandler();
 
@@ -49,36 +51,14 @@ public class ChatServer {
             serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel ch) throws Exception {
-                    //心跳检查handler，五秒内没有收到消息就会触发IdleState#READER_IDLE事件，对写事件为60秒检查
-                    ch.pipeline().addLast(new IdleStateHandler(HeartBeatConstant.READER_IDLE_TIME_SECONDS, HeartBeatConstant.WRITER_IDLE_TIME_SECONDS, HeartBeatConstant.ALL_IDLE_TIME_SECONDS, TimeUnit.SECONDS));
-                    //对出站和入站事件都进行关注
-                    ch.pipeline().addLast(new ChannelDuplexHandler() {
-                        //用于触发特殊事件
-                        @Override
-                        public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-                            if (evt instanceof IdleStateEvent) {
-                                IdleStateEvent idleStateEvent = (IdleStateEvent) evt;
-                                String username = SessionServiceFactory.getSessionService().getUsername(ctx.channel());
-                                //对READER_IDLE事件进行处理
-                                if (idleStateEvent.state() == IdleState.READER_IDLE) {
-                                    log.info("用户 {} 已经 {}s 没有发送数据", username, HeartBeatConstant.READER_IDLE_TIME_SECONDS);
-                                }
-
-                                //对WRITE_IDLE事件进行处理
-                                if (idleStateEvent.state() == IdleState.WRITER_IDLE) {
-                                    log.info("已经 {}s 没有向用户 {} 发送数据", HeartBeatConstant.WRITER_IDLE_TIME_SECONDS, username);
-                                }
-                            }
-
-
-                            super.userEventTriggered(ctx, evt);
-                        }
-                    });
-
                     //ProtocolFrameDecoder为每个channel独享，不能设置为共有对象
                     ch.pipeline().addLast(new ProtocolFrameDecoder());
                     //ch.pipeline().addLast(LOGGING_HANDLER);
                     ch.pipeline().addLast(MESSAGE_CODEC);
+                    //心跳检查handler，五秒内没有收到消息就会触发IdleState#READER_IDLE读空闲事件，对写事件为60秒检查
+                    ch.pipeline().addLast(new IdleStateHandler(HeartBeatConstant.READER_IDLE_TIME_SECONDS, HeartBeatConstant.WRITER_IDLE_TIME_SECONDS, HeartBeatConstant.ALL_IDLE_TIME_SECONDS, TimeUnit.SECONDS));
+                    ch.pipeline().addLast(IDLE_HANDLER);
+
                     ch.pipeline().addLast(LOGIN_REQUEST_MESSAGE_HANDLER);
                     ch.pipeline().addLast(CHAT_REQUEST_MESSAGE_HANDLER);
                 }
