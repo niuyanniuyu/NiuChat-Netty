@@ -1,6 +1,8 @@
 package cn.niu.client;
 
 import cn.hutool.core.util.StrUtil;
+import cn.niu.client.constants.HeartBeatConstant;
+import cn.niu.client.handler.IdleHandler;
 import cn.niu.client.utils.LoginUtils;
 import cn.niu.common.message.*;
 import cn.niu.common.protocol.MessageCodecSharable;
@@ -12,9 +14,11 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 客户端主函数
@@ -31,6 +35,8 @@ public class ChatClient {
         //定义handler
         LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
         MessageCodecSharable MESSAGE_CODEC = new MessageCodecSharable();
+        //心跳检测handler
+        IdleHandler IDLE_HANDLER = new IdleHandler();
 
         try {
             Bootstrap bootstrap = new Bootstrap();
@@ -42,6 +48,11 @@ public class ChatClient {
                     ch.pipeline().addLast(new ProtocolFrameDecoder());
                     // ch.pipeline().addLast(LOGGING_HANDLER);
                     ch.pipeline().addLast(MESSAGE_CODEC);
+                    //心跳检测空闲事件handler
+                    ch.pipeline().addLast(new IdleStateHandler(HeartBeatConstant.READER_IDLE_TIME_SECONDS, HeartBeatConstant.WRITER_IDLE_TIME_SECONDS, HeartBeatConstant.ALL_IDLE_TIME_SECONDS, TimeUnit.SECONDS));
+                    //处理读写空闲事件handler
+                    ch.pipeline().addLast(IDLE_HANDLER);
+
                     ch.pipeline().addLast("client handler", new ChannelInboundHandlerAdapter() {
                         @Override
                         public void channelActive(ChannelHandlerContext ctx) throws Exception {

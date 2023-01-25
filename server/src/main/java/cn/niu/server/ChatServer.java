@@ -55,7 +55,7 @@ public class ChatServer {
                     ch.pipeline().addLast(new ProtocolFrameDecoder());
                     //ch.pipeline().addLast(LOGGING_HANDLER);
                     ch.pipeline().addLast(MESSAGE_CODEC);
-                    //心跳检查handler，五秒内没有收到消息就会触发IdleState#READER_IDLE读空闲事件，对写事件为60秒检查
+                    //心跳检查handler，规定时间内没有收到消息就会触发IdleState#READER_IDLE读空闲事件，对写事件服务端暂不检查
                     ch.pipeline().addLast(new IdleStateHandler(HeartBeatConstant.READER_IDLE_TIME_SECONDS, HeartBeatConstant.WRITER_IDLE_TIME_SECONDS, HeartBeatConstant.ALL_IDLE_TIME_SECONDS, TimeUnit.SECONDS));
                     ch.pipeline().addLast(IDLE_HANDLER);
 
