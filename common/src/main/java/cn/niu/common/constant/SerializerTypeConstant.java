@@ -5,6 +5,7 @@ package cn.niu.common.constant;
  *
  * @author Ben
  */
+@Deprecated
 public interface SerializerTypeConstant {
     /**
      * 使用JDK序列化方式 (暂时使用JDK序列化方式)

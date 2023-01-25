@@ -9,12 +9,14 @@ import java.util.Map;
 
 /**
  * 所有消息类型的公共父类
+ *
  * @author Ben
  */
 @Data
 public abstract class Message implements Serializable {
     /**
      * 根据消息类型获得对应消息类
+     *
      * @param messageType
      * @return
      */
@@ -34,6 +36,7 @@ public abstract class Message implements Serializable {
 
     /**
      * 抽象方法，由真正的子类实现，返回具体的消息类型
+     *
      * @return
      */
     public abstract int getMessageType();
@@ -58,4 +61,23 @@ public abstract class Message implements Serializable {
     public static final int PingMessage = 14;
     public static final int PongMessage = 15;
     private static final Map<Integer, Class<?>> messageClasses = new HashMap<>();
+
+    static {
+        messageClasses.put(LoginRequestMessage, LoginRequestMessage.class);
+        messageClasses.put(LoginResponseMessage, LoginResponseMessage.class);
+        messageClasses.put(ChatRequestMessage, ChatRequestMessage.class);
+        messageClasses.put(ChatResponseMessage, ChatResponseMessage.class);
+        messageClasses.put(GroupCreateRequestMessage, GroupCreateRequestMessage.class);
+        messageClasses.put(GroupCreateResponseMessage, GroupCreateResponseMessage.class);
+        messageClasses.put(GroupJoinRequestMessage, GroupJoinRequestMessage.class);
+        messageClasses.put(GroupJoinResponseMessage, GroupJoinResponseMessage.class);
+        messageClasses.put(GroupQuitRequestMessage, GroupQuitRequestMessage.class);
+        messageClasses.put(GroupQuitResponseMessage, GroupQuitResponseMessage.class);
+        messageClasses.put(GroupChatRequestMessage, GroupChatRequestMessage.class);
+        messageClasses.put(GroupChatResponseMessage, GroupChatResponseMessage.class);
+        messageClasses.put(GroupMembersRequestMessage, GroupMembersRequestMessage.class);
+        messageClasses.put(GroupMembersResponseMessage, GroupMembersResponseMessage.class);
+        messageClasses.put(PingMessage, PingMessage.class);
+        messageClasses.put(PongMessage, PongMessage.class);
+    }
 }

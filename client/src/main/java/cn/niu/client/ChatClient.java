@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.niu.client.constants.HeartBeatConstant;
 import cn.niu.client.handler.IdleHandler;
 import cn.niu.client.utils.LoginUtils;
+import cn.niu.common.config.CommonConfig;
 import cn.niu.common.message.*;
 import cn.niu.common.protocol.MessageCodecSharable;
 import cn.niu.common.protocol.ProtocolFrameDecoder;
@@ -149,7 +150,7 @@ public class ChatClient {
                     });
                 }
             });
-            Channel channel = bootstrap.connect("localhost", 8080).sync().channel();
+            Channel channel = bootstrap.connect(CommonConfig.getServerIP(), CommonConfig.getServerPort()).sync().channel();
             log.info("client started");
             channel.closeFuture().sync();
         } catch (Exception e) {

@@ -1,5 +1,6 @@
 package cn.niu.common.protocol;
 
+import cn.niu.common.config.CommonConfig;
 import cn.niu.common.constant.SerializerTypeConstant;
 import cn.niu.common.message.Message;
 import io.netty.buffer.ByteBuf;
@@ -38,15 +39,15 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
         out.writeBytes(new byte[]{'b', 'a', 'b', 'y'});
         // 1个字节的版本号
         out.writeByte(1);
-        // 1个字节的序列化方式
-        out.writeByte(SerializerTypeConstant.JDK);
+        // 1个字节的序列化方式，根据枚举的顺序决定数值
+        out.writeByte(CommonConfig.getSerializerAlgorithm().ordinal());
         // 1个字节的指令类型，例如登录、注册、私聊、群发等
         out.writeByte(msg.getMessageType());
         // 4个字节的请求序号，预留异步处理消息的能力
         out.writeInt(msg.getSequenceId());
 
         //获取对象输出字节流
-        byte[] bytes = Serializer.Algorithm.JDK.serialize(msg);
+        byte[] bytes = CommonConfig.getSerializerAlgorithm().serialize(msg);
 
         // 4个字节的长度
         out.writeInt(bytes.length);
@@ -83,24 +84,12 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
         byte[] bytes = new byte[length];
         in.readBytes(bytes, 0, length);
 
-        //反序列化成对象
-        Message message = null;
-        switch (serializerType) {
-            case SerializerTypeConstant.JDK:
-                message = Serializer.Algorithm.JDK.deSerialize(Message.class, bytes);
-                break;
-            case SerializerTypeConstant.JSON:
+        //找到反序列化算法
+        Serializer.Algorithm algorithm = Serializer.Algorithm.values()[serializerType];
+        //确定具体消息类型，因为直接传入Message.class会丢失部分属性
+        Class<?> messageClass = Message.getMessageClass(messageType);
+        Message message = (Message) algorithm.deSerialize(messageClass, bytes);
 
-                break;
-            case SerializerTypeConstant.PROTOBUF:
-
-                break;
-            case SerializerTypeConstant.HESSIAN:
-
-                break;
-            default:
-                log.error("暂无匹配发序列化方法，消息解析失败");
-        }
 
         if (message != null) {
             log.info("消息头信息：{}, {}, {}, {}, {}, {}", magicNum, version, serializerType, messageType, sequenceId, length);

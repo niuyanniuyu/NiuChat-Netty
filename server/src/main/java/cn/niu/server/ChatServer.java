@@ -1,5 +1,6 @@
 package cn.niu.server;
 
+import cn.niu.common.config.CommonConfig;
 import cn.niu.common.protocol.MessageCodecSharable;
 import cn.niu.common.protocol.ProtocolFrameDecoder;
 import cn.niu.server.constants.HeartBeatConstant;
@@ -64,7 +65,7 @@ public class ChatServer {
                 }
             });
 
-            Channel channel = serverBootstrap.bind(8080).sync().channel();
+            Channel channel = serverBootstrap.bind(CommonConfig.getServerPort()).sync().channel();
             log.info("server started");
             channel.closeFuture().sync();
         } catch (Exception e) {

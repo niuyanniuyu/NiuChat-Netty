@@ -1,9 +1,11 @@
 package cn.niu.common.protocol;
 
 import cn.niu.common.message.Message;
+import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * 自定义序列化算法接口
@@ -11,6 +13,15 @@ import java.io.*;
  * @author Ben
  */
 public interface Serializer {
+    /**
+     * 序列化方法，对象 -> byte[]数组
+     *
+     * @param object
+     * @param <T>
+     * @return
+     */
+    <T> byte[] serialize(T object);
+
     /**
      * 反序列化方法，byte[]数组 -> 对象
      *
@@ -22,19 +33,11 @@ public interface Serializer {
     <T> T deSerialize(Class<T> clazz, byte[] bytes);
 
     /**
-     * 序列化方法，对象 -> byte[]数组
-     *
-     * @param object
-     * @param <T>
-     * @return
-     */
-    <T> byte[] serialize(T object);
-
-    /**
      * 序列化算法枚举
      */
     @Slf4j
     enum Algorithm implements Serializer {
+        //JDK自带的序列化方式
         JDK {
             @Override
             public <T> byte[] serialize(T object) {
@@ -88,6 +91,47 @@ public interface Serializer {
                     }
                 }
                 return t;
+            }
+        },
+
+        //JSON方式
+        JSON {
+            @Override
+            public <T> byte[] serialize(T object) {
+                String message = com.alibaba.fastjson2.JSON.toJSONString(object);
+                return message.getBytes(StandardCharsets.UTF_8);
+            }
+
+            @Override
+            public <T> T deSerialize(Class<T> clazz, byte[] bytes) {
+                String message = new String(bytes, StandardCharsets.UTF_8);
+                return com.alibaba.fastjson2.JSON.parseObject(message, clazz);
+            }
+        },
+
+        //ProtoBuf方式
+        PROTOBUF {
+            @Override
+            public <T> byte[] serialize(T object) {
+                return null;
+            }
+
+            @Override
+            public <T> T deSerialize(Class<T> clazz, byte[] bytes) {
+                return null;
+            }
+        },
+
+        //hessian方式
+        HESSIAN {
+            @Override
+            public <T> byte[] serialize(T object) {
+                return null;
+            }
+
+            @Override
+            public <T> T deSerialize(Class<T> clazz, byte[] bytes) {
+                return null;
             }
         }
     }
