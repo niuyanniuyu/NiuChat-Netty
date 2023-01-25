@@ -44,6 +44,8 @@ public class ChatClient {
             bootstrap.channel(NioSocketChannel.class);
             //配置连接超时事件5秒，如果服务器没有启动实际上不会等待5秒就抛出异常
             bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5 * 1000);
+            //立即发送消息，不使用nagle算法
+            bootstrap.option(ChannelOption.TCP_NODELAY, true);
             bootstrap.group(group);
             bootstrap.handler(new ChannelInitializer<SocketChannel>() {
                 @Override

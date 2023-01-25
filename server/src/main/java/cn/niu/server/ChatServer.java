@@ -49,6 +49,9 @@ public class ChatServer {
             //设置最大等待连接数量
             serverBootstrap.option(ChannelOption.SO_BACKLOG, ServerSocketChannelConstant.SO_BACKLOG_MAX_VALUE);
             serverBootstrap.group(boss, worker);
+
+            //立即发送消息，不使用nagle算法
+            serverBootstrap.childOption(ChannelOption.TCP_NODELAY, true);
             serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel ch) throws Exception {
