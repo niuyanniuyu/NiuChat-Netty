@@ -42,6 +42,8 @@ public class ChatClient {
         try {
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.channel(NioSocketChannel.class);
+            //配置连接超时事件5秒，如果服务器没有启动实际上不会等待5秒就抛出异常
+            bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5 * 1000);
             bootstrap.group(group);
             bootstrap.handler(new ChannelInitializer<SocketChannel>() {
                 @Override
@@ -154,7 +156,7 @@ public class ChatClient {
             log.info("client started");
             channel.closeFuture().sync();
         } catch (Exception e) {
-            log.error("客户端异常，{}", e.toString());
+            log.error("客户端发生异常，{}", e.toString());
         } finally {
             group.shutdownGracefully();
             log.info("client closed");
