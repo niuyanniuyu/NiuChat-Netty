@@ -46,35 +46,20 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
         out.writeInt(msg.getSequenceId());
 
         //获取对象输出字节流
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = null;
-        try {
-            oos = new ObjectOutputStream(bos);
-            oos.writeObject(msg);
-            byte[] bytes = bos.toByteArray();
+        byte[] bytes = Serializer.Algorithm.JDK.serialize(msg);
 
-            // 4个字节的长度
-            out.writeInt(bytes.length);
-            // 由于上述共15字节，添加 padding 填充
-            out.writeByte(0xff);
+        // 4个字节的长度
+        out.writeInt(bytes.length);
+        // 由于上述共15个字节，添加 padding 填充
+        out.writeByte(0xff);
 
-            // 内容
-            out.writeBytes(bytes);
+        // 内容
+        out.writeBytes(bytes);
 
-            //写入结果
-            outList.add(out);
+        //写入结果
+        outList.add(out);
 
-        } catch (Exception e) {
-            log.error("编码消息失败", e);
-        } finally {
-            if (oos != null) {
-                try {
-                    oos.close();
-                } catch (IOException e) {
-                    log.error("ObjectOutputStream关闭失败", e);
-                }
-            }
-        }
+
     }
 
     /**
@@ -102,23 +87,7 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
         Message message = null;
         switch (serializerType) {
             case SerializerTypeConstant.JDK:
-                ObjectInputStream ois = null;
-                try {
-                    ois = new ObjectInputStream(new ByteArrayInputStream(bytes));
-                    message = (Message) ois.readObject();
-                } catch (ClassNotFoundException e) {
-                    log.error("消息反序列化失败", e);
-                } catch (IOException e) {
-                    log.error("获取ObjectInputStream失败", e);
-                } finally {
-                    if (ois != null) {
-                        try {
-                            ois.close();
-                        } catch (IOException e) {
-                            log.error("ObjectInputStream关闭失败", e);
-                        }
-                    }
-                }
+                message = Serializer.Algorithm.JDK.deSerialize(Message.class, bytes);
                 break;
             case SerializerTypeConstant.JSON:
 
