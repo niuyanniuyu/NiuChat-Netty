@@ -1,12 +1,11 @@
 package cn.niu.server;
 
+import cn.niu.common.config.CommonConfig;
 import cn.niu.common.protocol.MessageCodecSharable;
 import cn.niu.common.protocol.ProtocolFrameDecoder;
 import cn.niu.server.constants.HeartBeatConstant;
 import cn.niu.server.constants.ServerSocketChannelConstant;
-import cn.niu.server.handler.ChatRequestMessageHandler;
-import cn.niu.server.handler.IdleHandler;
-import cn.niu.server.handler.LoginRequestMessageHandler;
+import cn.niu.server.handler.*;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -40,6 +39,7 @@ public class ChatServer {
         ChatRequestMessageHandler CHAT_REQUEST_MESSAGE_HANDLER = new ChatRequestMessageHandler();
         GroupCreatRequestMessageHandler GROUP_CREATE_REQUEST_MESSAGE_HANDLER = new GroupCreatRequestMessageHandler();
         GroupChatRequestMessageHandler GROUP_CHAT_REQUEST_MESSAGE_HANDLER = new GroupChatRequestMessageHandler();
+        GroupJoinRequestMessageHandler GROUP_JOIN_REQUEST_MESSAGE_HANDLER = new GroupJoinRequestMessageHandler();
         QuitHandler QUIT_HANDLER= new QuitHandler();
         //TODO 其他类型Handler
 
@@ -68,6 +68,7 @@ public class ChatServer {
                     ch.pipeline().addLast(CHAT_REQUEST_MESSAGE_HANDLER);
                     ch.pipeline().addLast(GROUP_CREATE_REQUEST_MESSAGE_HANDLER);
                     ch.pipeline().addLast(GROUP_CHAT_REQUEST_MESSAGE_HANDLER);
+                    ch.pipeline().addLast(GROUP_JOIN_REQUEST_MESSAGE_HANDLER);
                     ch.pipeline().addLast(QUIT_HANDLER);
                 }
             });

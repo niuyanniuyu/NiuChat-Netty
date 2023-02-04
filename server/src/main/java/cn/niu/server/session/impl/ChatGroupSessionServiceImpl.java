@@ -80,7 +80,7 @@ public class ChatGroupSessionServiceImpl implements ChatGroupSessionService {
     @Override
     public R<ChatGroup> joinMember(String groupName, String member) {
         //判断组名和成员是否为空
-        if (StrUtil.isAllNotEmpty(groupName, member)) {
+        if (!StrUtil.isAllNotEmpty(groupName, member)) {
             log.info("加入群聊时群名称或成员为空，群名称{}，成员{}", groupName, member);
             return R.error("群名称和成员不允许为空");
         }

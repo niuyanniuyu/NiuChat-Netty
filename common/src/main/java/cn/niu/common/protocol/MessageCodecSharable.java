@@ -1,12 +1,10 @@
 package cn.niu.common.protocol;
 
 import cn.niu.common.config.CommonConfig;
-import cn.niu.common.constant.SerializerTypeConstant;
 import cn.niu.common.message.Message;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageCodec;
 import io.netty.handler.codec.MessageToMessageCodec;
 import lombok.extern.slf4j.Slf4j;
 
