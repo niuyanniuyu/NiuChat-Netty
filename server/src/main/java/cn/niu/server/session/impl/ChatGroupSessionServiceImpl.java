@@ -90,12 +90,40 @@ public class ChatGroupSessionServiceImpl implements ChatGroupSessionService {
             value.getMembers().add(member);
             return value;
         });
-        //TODO 待删除
-        System.out.println(chatGroup);
+
         log.info(chatGroup == null ? "添加失败，群聊不存在" : "添加成功");
         return chatGroup == null ? R.error("添加失败，群聊不存在") : R.success(chatGroup, "添加成功");
     }
 
+    /**
+     * 将成员集合加入群聊
+     *
+     * @param groupName
+     * @param memberSet
+     * @return
+     */
+    @Override
+    public R<ChatGroup> joinMembers(String groupName, Set<String> memberSet) {
+        R<ChatGroup> result = null;
+        if (memberSet != null) {
+            //遍历用户集合加入群聊
+            for (String memberName : memberSet) {
+                result = joinMember(groupName, memberName);
+                if (result.getCode() != 1) {
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 移除组成员
+     *
+     * @param groupName 组名
+     * @param member    成员名
+     * @return
+     */
     @Override
     public R<ChatGroup> removeMember(String groupName, String member) {
         //判断组名和成员是否为空
@@ -114,6 +142,12 @@ public class ChatGroupSessionServiceImpl implements ChatGroupSessionService {
         return chatGroup == null ? R.error("删除失败，群聊不存在") : R.success(chatGroup, "删除成功");
     }
 
+    /**
+     * 移除聊天组
+     *
+     * @param groupName 组名
+     * @return
+     */
     @Override
     public R<ChatGroup> removeGroup(String groupName) {
         if (StrUtil.isEmpty(groupName)) {
@@ -132,6 +166,12 @@ public class ChatGroupSessionServiceImpl implements ChatGroupSessionService {
         return R.success(chatGroup, "删除成功");
     }
 
+    /**
+     * 获取组成员
+     *
+     * @param groupName 组名
+     * @return
+     */
     @Override
     public R<Set<String>> getMembers(String groupName) {
         if (StrUtil.isEmpty(groupName)) {
@@ -141,6 +181,12 @@ public class ChatGroupSessionServiceImpl implements ChatGroupSessionService {
         return R.success(groupMap.getOrDefault(groupName, ChatGroup.EMPTY_GROUP).getMembers());
     }
 
+    /**
+     * 获取组成员的 channel 集合, 只有在线的 channel 才会返回
+     *
+     * @param groupName 组名
+     * @return
+     */
     @Override
     public R<List<Channel>> getMembersChannel(String groupName) {
         if (StrUtil.isEmpty(groupName)) {
@@ -156,5 +202,33 @@ public class ChatGroupSessionServiceImpl implements ChatGroupSessionService {
                     .collect(Collectors.toList()), "查找成功");
         }
         return R.error("获取channel失败");
+    }
+
+    /**
+     * 根据组名称获取聊天组
+     *
+     * @param groupName
+     * @return
+     */
+    @Override
+    public R<ChatGroup> getChatGroup(String groupName) {
+        if (!StrUtil.isEmpty(groupName) && isExist(groupName).getCode() == 1) {
+            return R.success(groupMap.get(groupName), "查找成功");
+        }
+        return R.error("用户组不存在");
+    }
+
+    /**
+     * 判断群聊是否存在
+     *
+     * @param groupName
+     * @return
+     */
+    @Override
+    public R<Boolean> isExist(String groupName) {
+        if (!StrUtil.isEmpty(groupName) && groupMap.containsKey(groupName)) {
+            return R.success(true, "用户组存在");
+        }
+        return R.error("用户组不存在");
     }
 }
