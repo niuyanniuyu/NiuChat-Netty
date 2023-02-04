@@ -139,7 +139,7 @@ public class ChatClient {
                                                     System.out.println("输入错误，请重新输入！");
                                             }
                                         } catch (Exception e) {
-                                            log.error("输入或解析时发生异常，e={}", e.getCause());
+                                            log.error("输入或解析时发生异常，e=", e.getCause());
                                         }
                                     }
                                 }
