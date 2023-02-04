@@ -113,6 +113,8 @@ public class ChatClient {
                                             case "gcreate":
                                                 //创建聊天组成员集合
                                                 Set<String> members = new HashSet<>(Arrays.asList(commandArgs[2].split(",")));
+                                                //将当前用户也加入成员集合
+                                                members.add(username);
                                                 ctx.writeAndFlush(new GroupCreateRequestMessage(commandArgs[1], members));
                                                 break;
                                             case "gmembers":
