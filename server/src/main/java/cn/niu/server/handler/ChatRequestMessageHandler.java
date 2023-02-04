@@ -3,7 +3,7 @@ package cn.niu.server.handler;
 import cn.niu.common.message.ChatRequestMessage;
 import cn.niu.common.message.ChatResponseMessage;
 import cn.niu.server.constants.ChatConstant;
-import cn.niu.server.session.impl.SessionServiceFactory;
+import cn.niu.server.session.factories.SessionServiceFactory;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;

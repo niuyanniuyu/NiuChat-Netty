@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Ben
  */
-//TODO 应该使用并发安全Map集合
 public class SessionServiceImpl implements SessionService {
     /**
      * 根据用户名查询channel
@@ -47,7 +46,10 @@ public class SessionServiceImpl implements SessionService {
      */
     @Override
     public void unbind(Channel channel) {
+        channel.close();
+        String username = channelUsernameMap.get(channel);
         channelUsernameMap.remove(channel);
+        usernameChannelMap.remove(username);
     }
 
     /**
@@ -57,6 +59,9 @@ public class SessionServiceImpl implements SessionService {
      */
     @Override
     public void unbind(String username) {
+        Channel channel = usernameChannelMap.get(username);
+        channel.close();
+        channelUsernameMap.remove(channel);
         usernameChannelMap.remove(username);
     }
 

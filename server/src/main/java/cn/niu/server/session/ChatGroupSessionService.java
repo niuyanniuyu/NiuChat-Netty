@@ -32,6 +32,15 @@ public interface ChatGroupSessionService {
     R<ChatGroup> joinMember(String groupName, String memberName);
 
     /**
+     * 将成员集合加入群聊
+     * @param groupName
+     * @param memberSet
+     * @return
+     */
+    R<ChatGroup> joinMembers(String groupName, Set<String> memberSet);
+
+
+    /**
      * 移除组成员
      *
      * @param groupName  组名
@@ -63,4 +72,20 @@ public interface ChatGroupSessionService {
      * @return 成员 channel 集合
      */
     R<List<Channel>> getMembersChannel(String groupName);
+
+    /**
+     * 根据组名称获取聊天组
+     *
+     * @param groupName
+     * @return
+     */
+    R<ChatGroup> getChatGroup(String groupName);
+
+    /**
+     * 判断群聊是否存在
+     *
+     * @param groupName
+     * @return
+     */
+    R<Boolean> isExist(String groupName);
 }

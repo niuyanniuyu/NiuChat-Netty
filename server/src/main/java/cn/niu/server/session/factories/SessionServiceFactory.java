@@ -1,7 +1,8 @@
-package cn.niu.server.session.impl;
+package cn.niu.server.session.factories;
 
 
 import cn.niu.server.session.SessionService;
+import cn.niu.server.session.impl.SessionServiceImpl;
 
 /**
  * 客户端会话管理工厂类

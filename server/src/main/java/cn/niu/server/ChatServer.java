@@ -1,6 +1,5 @@
 package cn.niu.server;
 
-import cn.niu.common.config.CommonConfig;
 import cn.niu.common.protocol.MessageCodecSharable;
 import cn.niu.common.protocol.ProtocolFrameDecoder;
 import cn.niu.server.constants.HeartBeatConstant;
@@ -8,7 +7,6 @@ import cn.niu.server.constants.ServerSocketChannelConstant;
 import cn.niu.server.handler.ChatRequestMessageHandler;
 import cn.niu.server.handler.IdleHandler;
 import cn.niu.server.handler.LoginRequestMessageHandler;
-import cn.niu.server.session.impl.SessionServiceFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -16,8 +14,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.timeout.IdleState;
-import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,6 +38,11 @@ public class ChatServer {
         IdleHandler IDLE_HANDLER = new IdleHandler();
         LoginRequestMessageHandler LOGIN_REQUEST_MESSAGE_HANDLER = new LoginRequestMessageHandler();
         ChatRequestMessageHandler CHAT_REQUEST_MESSAGE_HANDLER = new ChatRequestMessageHandler();
+        GroupCreatRequestMessageHandler GROUP_CREATE_REQUEST_MESSAGE_HANDLER = new GroupCreatRequestMessageHandler();
+        GroupChatRequestMessageHandler GROUP_CHAT_REQUEST_MESSAGE_HANDLER = new GroupChatRequestMessageHandler();
+        QuitHandler QUIT_HANDLER= new QuitHandler();
+        //TODO 其他类型Handler
+
 
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
@@ -65,6 +66,9 @@ public class ChatServer {
 
                     ch.pipeline().addLast(LOGIN_REQUEST_MESSAGE_HANDLER);
                     ch.pipeline().addLast(CHAT_REQUEST_MESSAGE_HANDLER);
+                    ch.pipeline().addLast(GROUP_CREATE_REQUEST_MESSAGE_HANDLER);
+                    ch.pipeline().addLast(GROUP_CHAT_REQUEST_MESSAGE_HANDLER);
+                    ch.pipeline().addLast(QUIT_HANDLER);
                 }
             });
 
