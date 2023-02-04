@@ -3,6 +3,7 @@ package cn.niu.client;
 import cn.hutool.core.util.StrUtil;
 import cn.niu.client.constants.HeartBeatConstant;
 import cn.niu.client.handler.IdleHandler;
+import cn.niu.client.utils.ClientThreadPoolUtils;
 import cn.niu.client.utils.LoginUtils;
 import cn.niu.common.config.CommonConfig;
 import cn.niu.common.message.*;
@@ -29,6 +30,10 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ChatClient {
     public static void main(String[] args) {
+        ChatClient.start();
+    }
+
+    private static void start() {
         log.info("client start..");
         //定义线程组
         NioEventLoopGroup group = new NioEventLoopGroup();
@@ -62,7 +67,7 @@ public class ChatClient {
                         @Override
                         public void channelActive(ChannelHandlerContext ctx) throws Exception {
                             //在连接建立后触发Active事件，发送登录消息
-                            new Thread(() -> {
+                            ClientThreadPoolUtils.threadPoolExecutor.execute(() -> {
                                 //负责接收用户在控制台的输入并发送各种消息
                                 Scanner scanner = new Scanner(System.in);
                                 System.out.print("请输入用户名：");
@@ -100,41 +105,45 @@ public class ChatClient {
                                         String command = scanner.nextLine();
                                         String[] commandArgs = command.split(" ");
 
-                                        //根据命令向服务端发送不同消息
-                                        switch (commandArgs[0]) {
-                                            case "send":
-                                                //send [username][content]
-                                                ctx.writeAndFlush(new ChatRequestMessage(username, commandArgs[1], commandArgs[2]));
-                                                break;
-                                            case "gsend":
-                                                //gsend [group name][content]
-                                                ctx.writeAndFlush(new GroupChatRequestMessage(username, commandArgs[1], commandArgs[2]));
-                                                break;
-                                            case "gcreate":
-                                                //创建聊天组成员集合
-                                                Set<String> members = new HashSet<>(Arrays.asList(commandArgs[2].split(",")));
-                                                //将当前用户也加入成员集合
-                                                members.add(username);
-                                                ctx.writeAndFlush(new GroupCreateRequestMessage(commandArgs[1], members));
-                                                break;
-                                            case "gmembers":
-                                                ctx.writeAndFlush(new GroupMembersRequestMessage(commandArgs[1]));
-                                                break;
-                                            case "gjoin":
-                                                ctx.writeAndFlush(new GroupJoinRequestMessage(username, commandArgs[1]));
-                                                break;
-                                            case "gquit":
-                                                ctx.writeAndFlush(new GroupQuitRequestMessage(username, commandArgs[1]));
-                                                break;
-                                            case "quit":
-                                                ctx.channel().close();
-                                                break table;
-                                            default:
-                                                System.out.println("输入错误，请重新输入！");
+                                        try {
+                                            //根据命令向服务端发送不同消息
+                                            switch (commandArgs[0]) {
+                                                case "send":
+                                                    //send [username][content]
+                                                    ctx.writeAndFlush(new ChatRequestMessage(username, commandArgs[1], commandArgs[2]));
+                                                    break;
+                                                case "gsend":
+                                                    //gsend [group name][content]
+                                                    ctx.writeAndFlush(new GroupChatRequestMessage(username, commandArgs[1], commandArgs[2]));
+                                                    break;
+                                                case "gcreate":
+                                                    //创建聊天组成员集合
+                                                    Set<String> members = new HashSet<>(Arrays.asList(commandArgs[2].split(",")));
+                                                    //将当前用户也加入成员集合
+                                                    members.add(username);
+                                                    ctx.writeAndFlush(new GroupCreateRequestMessage(commandArgs[1], members));
+                                                    break;
+                                                case "gmembers":
+                                                    ctx.writeAndFlush(new GroupMembersRequestMessage(commandArgs[1]));
+                                                    break;
+                                                case "gjoin":
+                                                    ctx.writeAndFlush(new GroupJoinRequestMessage(username, commandArgs[1]));
+                                                    break;
+                                                case "gquit":
+                                                    ctx.writeAndFlush(new GroupQuitRequestMessage(username, commandArgs[1]));
+                                                    break;
+                                                case "quit":
+                                                    ctx.channel().close();
+                                                    break table;
+                                                default:
+                                                    System.out.println("输入错误，请重新输入！");
+                                            }
+                                        } catch (Exception e) {
+                                            log.error("输入或解析时发生异常，e={}", e.getCause());
                                         }
                                     }
                                 }
-                            }, "system.in").start();
+                            });
                             super.channelActive(ctx);
                         }
 
@@ -159,7 +168,8 @@ public class ChatClient {
             Channel channel = bootstrap.connect(CommonConfig.getServerIP(), CommonConfig.getServerPort()).sync().channel();
             log.info("client started");
             channel.closeFuture().sync();
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             log.error("客户端发生异常，{}", e.toString());
         } finally {
             group.shutdownGracefully();
